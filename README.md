@@ -10,4 +10,5 @@ This package can easily be added via git url with `https://github.com/Eyap53/eye
 
 ## License
 
-All the files are released under the MPL-2.0, see [LICENSE](./LICENSE).
+
+This package is released under the MPL-2.0 license, see [LICENSE.md](./LICENSE.md), except for the ViveSR plugin.
