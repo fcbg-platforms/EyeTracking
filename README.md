@@ -6,7 +6,7 @@ A library package/framework to use efficiently eye tracking. As of now, you can 
 
 That package needs com.maellacour.gamelibrary.soworkflowcommon to work. Meaning you first need to add via git url `https://gitlab.com/Eyap/gamelibrary.soworkflowcommon.git` as a package.
 
-This package can easily be added via git url with `https://github.com/Eyap53/eye-tracking.git`.
+This package can easily be added via git url with `https://gitlab.com/Eyap/eye-tracking.git`.
 
 ## License
 
