@@ -10,5 +10,4 @@ This package can easily be added via git url with `https://gitlab.com/Eyap/eye-t
 
 ## License
 
-
 This package is released under the MPL-2.0 license, see [LICENSE.md](./LICENSE.md), except for the ViveSR plugin.

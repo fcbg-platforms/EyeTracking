@@ -10,6 +10,7 @@
 		EyeData_v2 eyeData { get; }
 		Vector3 gazeCombinedPosition { get; }
 		GazeRay gazeRay { get; }
+		RaycastHit gazeHit { get; }
 		float opennessLeft { get; }
 		float opennessRight { get; }
 		float pupilDiameterLeft { get; }

@@ -44,6 +44,7 @@
 		public EyeData_v2 eyeData { get { return default(EyeData_v2); } }
 		public Vector3 gazeCombinedPosition { get { return _gazeCombinedPosition; } }
 		public GazeRay gazeRay { get { return _gazeRay; } }
+		public RaycastHit gazeHit { get { return _gazeHit; } }
 		public float opennessLeft { get { return 1f; } }
 		public float opennessRight { get { return 1f; } }
 		public float pupilDiameterLeft { get { return 1f; } }
