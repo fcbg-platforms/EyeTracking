@@ -1,4 +1,4 @@
-﻿namespace EyeTracking
+namespace EyeTracking
 {
 	using System;
 	using System.Runtime.InteropServices;
@@ -97,7 +97,7 @@
 			}
 		}
 
-		private void Update()
+		private void FixedUpdate()
 		{
 			EyeFramework();
 
