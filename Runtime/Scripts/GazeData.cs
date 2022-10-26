@@ -12,6 +12,16 @@ namespace EyeTracking
 		/// <summary>
 		/// The 3D position of the origin of the gaze ray given in meters.
 		/// </summary>
+		public Vector3 originLocal;
+
+		/// <summary>
+		/// Unit vector describing the direction of the eye.
+		/// </summary>
+		public Vector3 directionLocal;
+
+		/// <summary>
+		/// The 3D position of the origin of the gaze ray given in meters.
+		/// </summary>
 		public Vector3 originWorld;
 
 		/// <summary>

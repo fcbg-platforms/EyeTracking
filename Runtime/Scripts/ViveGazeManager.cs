@@ -1,4 +1,4 @@
-namespace EyeTracking
+﻿namespace EyeTracking
 {
 	using System;
 	using System.Runtime.InteropServices;
@@ -8,13 +8,6 @@ namespace EyeTracking
 	[RequireComponent(typeof(SpriteRenderer))]
 	public class ViveGazeManager : MonoBehaviour, IGazeManager
 	{
-		[Header("Debugging:")]
-		[SerializeField] private bool _skipCalibration = false;
-
-		[SerializeField, Tooltip("Enable the gaze visualizer to highlight the gaze position.")]
-		private bool _gazeVisualFeedback;
-		public bool gazeVisualFeedback { get => _gazeVisualFeedback; set => _gazeVisualFeedback = value; }
-
 		[Header("Settings")]
 		public bool ScaleAffectedByPrecision;
 
@@ -40,29 +33,41 @@ namespace EyeTracking
 		private bool eye_callback_registered = false;
 
 		private static EyeData_v2 _eyeData = new EyeData_v2();
-		private Vector3 _gazeCombinedPosition;
-		private GazeRay _gazeRay;
-		private RaycastHit _gazeHit;
+
+		private bool _isUserDetected;
+
+		private EyesPhysiologicalData _eyePhysiologicalData;
+
+		private GazeData _gazeData;
 
 		private float _opennessLeft;
 		private float _opennessRight;
 		private float _pupilDiameterLeft;
 		private float _pupilDiameterRight;
 
-		private GameObject currentObjectLookedAt = null;
+		private GameObject _currentObjectLookedAt = null;
 
 		#region Getters
 		public EyeData_v2 eyeData { get { return _eyeData; } }
-		public Vector3 gazeCombinedPosition { get { return _gazeCombinedPosition; } }
-		public GazeRay gazeRay { get { return _gazeRay; } }
-		public RaycastHit gazeHit { get { return _gazeHit; } }
-		public float opennessLeft { get { return _opennessLeft; } }
-		public float opennessRight { get { return _opennessRight; } }
-		public float pupilDiameterLeft { get { return _pupilDiameterLeft; } }
-		public float pupilDiameterRight { get { return _pupilDiameterRight; } }
-		public GameObject objectLookedAt { get { return currentObjectLookedAt; } }
+
+		#region interface implementation
+
+		public bool isUserDetected { get { return _isUserDetected; } }
+
+		public EyesPhysiologicalData eyePhysiologicalData { get { return _eyePhysiologicalData; } }
+
+		public GazeData gazeData { get { return _gazeData; } }
+		public GameObject objectLookedAt { get { return _currentObjectLookedAt; } }
 		public Action<GameObject> objectLookedChanged { get; set; }
 
+		[Header("Debugging:")]
+		[SerializeField] private bool _skipCalibration = false;
+
+		[SerializeField, Tooltip("Enable the gaze visualizer to highlight the gaze position.")]
+		private bool _gazeVisualFeedback;
+		public bool gazeVisualFeedback { get => _gazeVisualFeedback; set => _gazeVisualFeedback = value; }
+
+		#endregion
 		#endregion
 
 
@@ -81,10 +86,7 @@ namespace EyeTracking
 			_mainCamera = Camera.main;
 
 			_spriteRenderer = GetComponent<SpriteRenderer>();
-			if (!gazeVisualFeedback)
-			{
-				_spriteRenderer.enabled = _gazeRay.isValid;
-			}
+			_spriteRenderer.enabled = gazeVisualFeedback && _gazeData.isValid;
 
 			if (!SRanipal_Eye_Framework.Instance.EnableEye)
 			{
@@ -95,20 +97,13 @@ namespace EyeTracking
 			{
 				SRanipal_Eye_v2.LaunchEyeCalibration();     // Perform calibration for eye tracking.
 			}
+
+			EyeFramework();
 		}
 
 		private void FixedUpdate()
 		{
-			EyeFramework();
-
 			SetGazeRayAndEyeOpenness();
-
-			//SetGaze(_gazeRay);
-
-			//if (ScaleAffectedByPrecision && gazeModifierFilter != null)
-			//{
-			//    UpdatePrecisionScale(gazeModifierFilter.GetMaxPrecisionAngleDegrees(eyeTrackingData.GazeRay.Direction, worldForward));
-			//}
 		}
 
 		private void EyeFramework()
@@ -124,6 +119,7 @@ namespace EyeTracking
 					Debug.LogWarning("Error with Eye Tracking.");
 					return;
 				default:
+					Debug.LogWarning(string.Format("SRanival status not recognized: {1}.", SRanipal_Eye_Framework.Status));
 					return;
 			}
 
@@ -139,159 +135,131 @@ namespace EyeTracking
 			}
 		}
 
-
+		VerboseData _verboseData; // prevent allocating each timed frame
+		Vector3 _gazeOriginCombinedLocal, _gazeDirectionCombinedLocal; // prevent allocating each timed frame
 		private void SetGazeRayAndEyeOpenness()
 		{
-			// -- EYE OPENNESS --
+			// -- EYE PHYSIOLOGICAL data --
+			_gazeData.isValid = false;
 
-			if (eye_callback_registered)
+			if (eye_callback_registered && SRanipal_Eye_v2.GetVerboseData(out _verboseData, _eyeData) || SRanipal_Eye_v2.GetVerboseData(out _verboseData))
 			{
-				if (!SRanipal_Eye_v2.GetEyeOpenness(EyeIndex.LEFT, out _opennessLeft, _eyeData))
-				{
-					_opennessLeft = -1f;
-				}
-				if (!SRanipal_Eye_v2.GetEyeOpenness(EyeIndex.RIGHT, out _opennessRight, _eyeData))
-				{
-					_opennessRight = -1f;
-				}
+				_eyePhysiologicalData.leftEyePhysiologicalData.pupilDiameter = _verboseData.left.pupil_diameter_mm;
+				_eyePhysiologicalData.rightEyePhysiologicalData.pupilDiameter = _verboseData.right.pupil_diameter_mm;
 
-				VerboseData verboseData;
-				if (SRanipal_Eye_v2.GetVerboseData(out verboseData, _eyeData))
-				{
-					_pupilDiameterLeft = verboseData.left.pupil_diameter_mm;
-					_pupilDiameterRight = verboseData.right.pupil_diameter_mm;
-				}
-				else
-				{
-					_pupilDiameterLeft = -1f;
-					_pupilDiameterRight = -1f;
-				}
+				_eyePhysiologicalData.leftEyePhysiologicalData.pupilPositionInSensorArea = _verboseData.left.pupil_position_in_sensor_area;
+				_eyePhysiologicalData.rightEyePhysiologicalData.pupilPositionInSensorArea = _verboseData.right.pupil_position_in_sensor_area;
+
+				_eyePhysiologicalData.leftEyePhysiologicalData.eyeOpenness = _verboseData.left.eye_openness;
+				_eyePhysiologicalData.rightEyePhysiologicalData.eyeOpenness = _verboseData.right.eye_openness;
+
+				_eyePhysiologicalData.leftEyePhysiologicalData.eyeFrown = _eyeData.expression_data.left.eye_frown;
+				_eyePhysiologicalData.leftEyePhysiologicalData.eyeSqueeze = _eyeData.expression_data.left.eye_wide;
+				_eyePhysiologicalData.leftEyePhysiologicalData.eyeWide = _eyeData.expression_data.left.eye_frown;
+				_eyePhysiologicalData.rightEyePhysiologicalData.eyeFrown = _eyeData.expression_data.right.eye_frown;
+				_eyePhysiologicalData.rightEyePhysiologicalData.eyeSqueeze = _eyeData.expression_data.right.eye_wide;
+				_eyePhysiologicalData.rightEyePhysiologicalData.eyeWide = _eyeData.expression_data.right.eye_frown;
 			}
 			else
 			{
-				if (!SRanipal_Eye_v2.GetEyeOpenness(EyeIndex.LEFT, out _opennessLeft))
-				{
-					_opennessLeft = -1f;
-				}
-				if (!SRanipal_Eye_v2.GetEyeOpenness(EyeIndex.RIGHT, out _opennessRight))
-				{
-					_opennessRight = -1f;
-				}
+				_eyePhysiologicalData.leftEyePhysiologicalData.pupilDiameter = -1f;
+				_eyePhysiologicalData.rightEyePhysiologicalData.pupilDiameter = -1f;
 
-				VerboseData verboseData;
-				if (SRanipal_Eye_v2.GetVerboseData(out verboseData))
-				{
-					_pupilDiameterLeft = verboseData.left.pupil_diameter_mm;
-					_pupilDiameterRight = verboseData.right.pupil_diameter_mm;
-				}
-				else
-				{
-					_pupilDiameterLeft = -1f;
-					_pupilDiameterRight = -1f;
-				}
+				_eyePhysiologicalData.leftEyePhysiologicalData.pupilPositionInSensorArea = new Vector2(-1f, -1f);
+				_eyePhysiologicalData.rightEyePhysiologicalData.pupilPositionInSensorArea = new Vector2(-1f, -1f);
+
+				_eyePhysiologicalData.leftEyePhysiologicalData.eyeOpenness = -1f;
+				_eyePhysiologicalData.rightEyePhysiologicalData.eyeOpenness = -1f;
 			}
 
 
 			// -- EYE DIRECTION --
 
-			Vector3 GazeOriginCombinedLocal, GazeDirectionCombinedLocal;
+			// TODO: Improve with a loop here iterating with a GazeIndex array made of combine, left and right
 
-			// Improve with a loop here iterating with a GazeIndex array made of combine, left and right
-			if (eye_callback_registered)
+			// if (eye_callback_registered)
+			// {
+
+			// EYE DATA already updated in the previous section (eye physiological), so no need for another fetch
+			if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out _gazeData.originLocal, out _gazeData.directionLocal, _eyeData))
+				{ }
+			else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out _gazeData.originLocal, out _gazeData.directionLocal, _eyeData))
+				{ }
+			else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out _gazeData.originLocal, out _gazeData.directionLocal, _eyeData))
+				{ }
+			else
 			{
-				if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out GazeOriginCombinedLocal, out GazeDirectionCombinedLocal, _eyeData))
-				{ }
-				else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out GazeOriginCombinedLocal, out GazeDirectionCombinedLocal, _eyeData))
-				{ }
-				else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out GazeOriginCombinedLocal, out GazeDirectionCombinedLocal, _eyeData))
-				{ }
-				else
+				return;
+			}
+			// }
+			// else
+			// {
+			// 	if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out _gazeOriginCombinedLocal, out _gazeDirectionCombinedLocal))
+			// 	{ }
+			// 	else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out _gazeOriginCombinedLocal, out _gazeDirectionCombinedLocal))
+			// 	{ }
+			// 	else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out _gazeOriginCombinedLocal, out _gazeDirectionCombinedLocal))
+			// 	{ }
+			// 	else
+			// 	{
+			// 		_gazeRay.isValid = false;
+			// 		return;
+			// 	}
+			// }
+
+			_gazeData.originWorld = Camera.main.transform.position;
+			_gazeData.directionWorld = Camera.main.transform.TransformDirection(_gazeDirectionCombinedLocal);
+			_gazeData.isValid = true;
+
+			if (Physics.Raycast(_gazeData.originWorld, _gazeData.directionWorld, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
+			{
+				_gazeData.distance = _gazeData.gazeHit.distance;
+				if (_gazeData.gazeHit.rigidbody != null && _gazeData.gazeHit.rigidbody.gameObject != _currentObjectLookedAt || _gazeData.gazeHit.collider.gameObject != _currentObjectLookedAt)
 				{
-					_gazeRay.isValid = false;
-					return;
+					UpdateObjectLookedAt(_gazeData.gazeHit.rigidbody != null ? _gazeData.gazeHit.rigidbody.gameObject : _gazeData.gazeHit.collider.gameObject);
 				}
 			}
 			else
 			{
-				if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out GazeOriginCombinedLocal, out GazeDirectionCombinedLocal))
-				{ }
-				else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out GazeOriginCombinedLocal, out GazeDirectionCombinedLocal))
-				{ }
-				else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out GazeOriginCombinedLocal, out GazeDirectionCombinedLocal))
-				{ }
-				else
-				{
-					_gazeRay.isValid = false;
-					return;
-				}
+				_gazeData.distance = _raycastMaxDistance;
+				UpdateObjectLookedAt(null);
 			}
-
-			Vector3 GazeDirectionCombined = Camera.main.transform.TransformDirection(GazeDirectionCombinedLocal);
-			//_gazeRay.Origin = Camera.main.transform.position - Camera.main.transform.up * 0.05f;
-			_gazeRay.origin = Camera.main.transform.position;
-			_gazeRay.direction = GazeDirectionCombined;
-			_gazeRay.isValid = true;
-
-			if (Physics.Raycast(_gazeRay.origin, _gazeRay.direction, out _gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
-			{
-				_gazeRay.distance = _gazeHit.distance;
-				if (_gazeHit.rigidbody != null && _gazeHit.rigidbody.gameObject != currentObjectLookedAt || _gazeHit.collider.gameObject != currentObjectLookedAt)
-				{
-					currentObjectLookedAt = _gazeHit.rigidbody != null ? _gazeHit.rigidbody.gameObject : _gazeHit.collider.gameObject;
-					if (objectLookedChanged != null)
-					{
-						objectLookedChanged(currentObjectLookedAt);
-					}
-				}
-			}
-			else
-			{
-				_gazeRay.distance = _raycastMaxDistance;
-				if (currentObjectLookedAt != null)
-				{
-					currentObjectLookedAt = null;
-					if (objectLookedChanged != null)
-					{
-						objectLookedChanged(currentObjectLookedAt);
-					}
-				}
-			}
-
-			SetGaze(_gazeRay);
 
 			if (gazeVisualFeedback)
 			{
-				_spriteRenderer.enabled = _gazeRay.isValid;
+				_spriteRenderer.enabled = _gazeData.isValid;
 
 				if (_spriteRenderer.enabled)
 				{
-					SetPositionAndScale(_gazeRay);
+					SetPositionAndScale(_gazeData);
 				}
 			}
-			else
-			{
-				_spriteRenderer.enabled = false;
-			}
 		}
 
-		private void SetGaze(GazeRay gazeRay)
+		private void SetPositionAndScale(GazeData gazeData)
 		{
-			Vector3 usedDirection = gazeRay.direction.normalized;
-			_gazeCombinedPosition = gazeRay.origin + usedDirection * gazeRay.distance;
-		}
+			Vector3 interpolatedGazeDirection = Vector3.Lerp(_lastGazeDirection, gazeData.directionWorld, _smoothMoveSpeed * Time.unscaledDeltaTime);
 
-		private void SetPositionAndScale(GazeRay gazeRay)
-		{
-			Vector3 interpolatedGazeDirection = Vector3.Lerp(_lastGazeDirection, gazeRay.direction, _smoothMoveSpeed * Time.unscaledDeltaTime);
+			Vector3 usedDirection = _smoothMove ? interpolatedGazeDirection.normalized : gazeData.directionWorld.normalized;
+			transform.position = gazeData.originWorld + usedDirection * gazeData.distance;
 
-			Vector3 usedDirection = _smoothMove ? interpolatedGazeDirection.normalized : gazeRay.direction.normalized;
-			transform.position = gazeRay.origin + usedDirection * gazeRay.distance;
-
-			transform.localScale = Vector3.one * gazeRay.distance * _scaleFactor;
+			transform.localScale = Vector3.one * gazeData.distance * _scaleFactor;
 
 			transform.forward = usedDirection.normalized;
 
 			_lastGazeDirection = usedDirection;
+		}
+
+		private void UpdateObjectLookedAt(GameObject newObject)
+		{
+			if (_currentObjectLookedAt != newObject)
+			{
+				_currentObjectLookedAt = newObject;
+				if (objectLookedChanged != null)
+				{
+					objectLookedChanged(_currentObjectLookedAt);
+				}
+			}
 		}
 
 		// private void UpdatePrecisionScale(float maxPrecisionAngleDegrees)
@@ -304,18 +272,41 @@ namespace EyeTracking
 		// 	return maxPrecisionAngleDegrees * Mathf.Sin(maxPrecisionAngleDegrees * Mathf.Deg2Rad) * PrecisionAngleScaleFactor;
 		// }
 
-		// private void Release()
-		// {
-		// 	if (eye_callback_registered == true)
-		// 	{
-		// 		SRanipal_Eye_v2.WrapperUnRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
-		// 		eye_callback_registered = false;
-		// 	}
-		// }
+		private void Release()
+		{
+			if (eye_callback_registered)
+			{
+				SRanipal_Eye_v2.WrapperUnRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
+				eye_callback_registered = false;
+			}
+		}
 
 		private static void EyeCallback(ref EyeData_v2 eye_data)
 		{
 			_eyeData = eye_data;
 		}
+
+#if UNITY_EDITOR
+		/// <summary>
+		/// Called when the script is loaded or a value is changed in the
+		/// inspector (Called in the editor only).
+		/// </summary>
+		private void OnValidate()
+		{
+			if (gazeVisualFeedback)
+			{
+				_spriteRenderer.enabled = _gazeData.isValid;
+
+				if (_spriteRenderer.enabled)
+				{
+					SetPositionAndScale(_gazeData);
+				}
+			}
+			else
+			{
+				_spriteRenderer.enabled = false;
+			}
+		}
+#endif
 	}
 }
