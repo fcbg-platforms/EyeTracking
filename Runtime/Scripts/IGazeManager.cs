@@ -6,16 +6,16 @@
 
 	public interface IGazeManager
 	{
-		bool gazeVisualFeedback { get; set; }
-		EyeData_v2 eyeData { get; }
-		Vector3 gazeCombinedPosition { get; }
-		GazeRay gazeRay { get; }
-		RaycastHit gazeHit { get; }
-		float opennessLeft { get; }
-		float opennessRight { get; }
-		float pupilDiameterLeft { get; }
-		float pupilDiameterRight { get; }
+		bool isUserDetected { get; }
+
+		EyesPhysiologicalData eyePhysiologicalData { get; }
+
+		GazeData gazeData { get; }
+
 		GameObject objectLookedAt { get; }
-		Action<GameObject> objectLookedChanged { get; set; }
+		Action<GameObject> objectLookedChanged { get; }
+
+		// Debug
+		bool gazeVisualFeedback { get; set; }
 	}
 }
