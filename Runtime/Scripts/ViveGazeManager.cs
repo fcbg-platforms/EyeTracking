@@ -40,11 +40,6 @@
 
 		private GazeData _gazeData;
 
-		private float _opennessLeft;
-		private float _opennessRight;
-		private float _pupilDiameterLeft;
-		private float _pupilDiameterRight;
-
 		private GameObject _currentObjectLookedAt = null;
 
 		#region Getters
@@ -103,7 +98,7 @@
 
 		private void FixedUpdate()
 		{
-			SetGazeRayAndEyeOpenness();
+			GetEyePhysiologicalAndGazeData();
 		}
 
 		private void EyeFramework()
@@ -135,23 +130,22 @@
 			}
 		}
 
-		VerboseData _verboseData; // prevent allocating each timed frame
 		Vector3 _gazeOriginCombinedLocal, _gazeDirectionCombinedLocal; // prevent allocating each timed frame
-		private void SetGazeRayAndEyeOpenness()
+		private void GetEyePhysiologicalAndGazeData()
 		{
 			// -- EYE PHYSIOLOGICAL data --
 			_gazeData.isValid = false;
 
-			if (eye_callback_registered && SRanipal_Eye_v2.GetVerboseData(out _verboseData, _eyeData) || SRanipal_Eye_v2.GetVerboseData(out _verboseData))
+			if (eye_callback_registered || SRanipal_Eye_API.GetEyeData_v2(ref _eyeData) == ViveSR.Error.WORK)
 			{
-				_eyePhysiologicalData.leftEyePhysiologicalData.pupilDiameter = _verboseData.left.pupil_diameter_mm;
-				_eyePhysiologicalData.rightEyePhysiologicalData.pupilDiameter = _verboseData.right.pupil_diameter_mm;
+				_eyePhysiologicalData.leftEyePhysiologicalData.pupilDiameter = _eyeData.verbose_data.left.pupil_diameter_mm;
+				_eyePhysiologicalData.rightEyePhysiologicalData.pupilDiameter = _eyeData.verbose_data.right.pupil_diameter_mm;
 
-				_eyePhysiologicalData.leftEyePhysiologicalData.pupilPositionInSensorArea = _verboseData.left.pupil_position_in_sensor_area;
-				_eyePhysiologicalData.rightEyePhysiologicalData.pupilPositionInSensorArea = _verboseData.right.pupil_position_in_sensor_area;
+				_eyePhysiologicalData.leftEyePhysiologicalData.pupilPositionInSensorArea = _eyeData.verbose_data.left.pupil_position_in_sensor_area;
+				_eyePhysiologicalData.rightEyePhysiologicalData.pupilPositionInSensorArea = _eyeData.verbose_data.right.pupil_position_in_sensor_area;
 
-				_eyePhysiologicalData.leftEyePhysiologicalData.eyeOpenness = _verboseData.left.eye_openness;
-				_eyePhysiologicalData.rightEyePhysiologicalData.eyeOpenness = _verboseData.right.eye_openness;
+				_eyePhysiologicalData.leftEyePhysiologicalData.eyeOpenness = _eyeData.verbose_data.left.eye_openness;
+				_eyePhysiologicalData.rightEyePhysiologicalData.eyeOpenness = _eyeData.verbose_data.right.eye_openness;
 
 				_eyePhysiologicalData.leftEyePhysiologicalData.eyeFrown = _eyeData.expression_data.left.eye_frown;
 				_eyePhysiologicalData.leftEyePhysiologicalData.eyeSqueeze = _eyeData.expression_data.left.eye_wide;
@@ -207,9 +201,14 @@
 			// 	}
 			// }
 
-			_gazeData.originWorld = Camera.main.transform.position;
-			_gazeData.directionWorld = Camera.main.transform.TransformDirection(_gazeDirectionCombinedLocal);
+			if (_mainCamera == null)
+			{
+				_mainCamera = Camera.main;
+			}
+			_gazeData.originWorld = _mainCamera.transform.position;
+			_gazeData.directionWorld = _mainCamera.transform.TransformDirection(_gazeDirectionCombinedLocal);
 			_gazeData.isValid = true;
+			_isUserDetected = _eyeData.no_user;
 
 			if (Physics.Raycast(_gazeData.originWorld, _gazeData.directionWorld, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
 			{
@@ -295,6 +294,7 @@
 		{
 			if (gazeVisualFeedback)
 			{
+				_spriteRenderer = GetComponent<SpriteRenderer>();
 				_spriteRenderer.enabled = _gazeData.isValid;
 
 				if (_spriteRenderer.enabled)
