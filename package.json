@@ -1,6 +1,6 @@
 {
-  "name": "com.maellacour.eye-tracking",
-  "version": "1.1.1",
+  "name": "ch.fcbg.eye-tracking",
+  "version": "2.0.0",
   "displayName": "Eye Tracking",
   "description": "A library package/framework to use efficiently eye tracking.",
   "unity": "2020.1",
