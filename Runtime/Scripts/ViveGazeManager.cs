@@ -42,6 +42,8 @@
 
 		private GameObject _currentObjectLookedAt = null;
 
+		private AcquisitionData _acquisitionData;
+
 		#region Getters
 		public EyeData_v2 eyeData { get { return _eyeData; } }
 
@@ -54,6 +56,8 @@
 		public GazeData gazeData { get { return _gazeData; } }
 		public GameObject objectLookedAt { get { return _currentObjectLookedAt; } }
 		public Action<GameObject> objectLookedChanged { get; set; }
+
+		public AcquisitionData acquisitionData { get { return _acquisitionData; } }
 
 		[Header("Debugging:")]
 		[SerializeField] private bool _skipCalibration = false;
@@ -209,6 +213,9 @@
 			_gazeData.directionWorld = _mainCamera.transform.TransformDirection(_gazeDirectionCombinedLocal);
 			_gazeData.isValid = true;
 			_isUserDetected = _eyeData.no_user;
+
+			_acquisitionData.frameSequence = _eyeData.frame_sequence;
+			_acquisitionData.timestamp = _eyeData.timestamp;
 
 			if (Physics.Raycast(_gazeData.originWorld, _gazeData.directionWorld, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
 			{

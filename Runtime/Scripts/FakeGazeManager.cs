@@ -39,8 +39,9 @@
 
 		private GazeData _gazeData;
 
-
 		private GameObject _currentObjectLookedAt = null;
+
+		private AcquisitionData _acquisitionData;
 
 		#region interface implementation
 
@@ -56,6 +57,8 @@
 		/// </summary>
 		public GameObject objectLookedAt { get { return _currentObjectLookedAt; } }
 		public Action<GameObject> objectLookedChanged { get; set; }
+
+		public AcquisitionData acquisitionData { get { return _acquisitionData; } }
 
 		[Header("Debugging:")]
 		[SerializeField] private bool _skipCalibration = false;
@@ -90,6 +93,9 @@
 			_gazeData.directionWorld = ray.direction;
 			_gazeData.isValid = true;
 			_isUserDetected = true;
+
+			_acquisitionData.frameSequence = _eyeData.frame_sequence;
+			_acquisitionData.timestamp = _eyeData.timestamp;
 
 			if (Physics.Raycast(ray, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
 			{

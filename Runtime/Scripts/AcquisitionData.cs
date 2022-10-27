@@ -2,16 +2,16 @@ namespace EyeTracking
 {
 	using UnityEngine;
 
-	public struct GazeData
+	public struct AcquisitionData
 	{
 		/// <summary>
 		/// The frame sequence.
 		/// </summary>
-		public int frame_sequence;
+		public int frameSequence;
 
 		/// <summary>
 		/// The time in ms when the frame was capturing.
 		/// </summary>
-		public int timestamp;
+		public float timestamp;
 	}
 }
