@@ -11,38 +11,38 @@
 		[Header("Settings")]
 		public bool ScaleAffectedByPrecision;
 
-		[SerializeField] private bool _smoothMove = true;
+		[SerializeField] protected bool _smoothMove = true;
 
-		[SerializeField][Range(1, 30)] private int _smoothMoveSpeed = 30;
+		[SerializeField][Range(1, 30)] protected int _smoothMoveSpeed = 30;
 
 		[Header("Eye Raycast")]
-		[SerializeField] private int _raycastMaxDistance;
-		[SerializeField] private LayerMask _raycastLayerMask;
+		[SerializeField] protected int _raycastMaxDistance;
+		[SerializeField] protected LayerMask _raycastLayerMask;
 
-		private Camera _mainCamera;
+		protected Camera _mainCamera;
 
-		private SpriteRenderer _spriteRenderer;
-		private Vector3 _lastGazeDirection;
+		protected SpriteRenderer _spriteRenderer;
+		protected Vector3 _lastGazeDirection;
 
 		// private const float OffsetFromFarClipPlane = 10f;
 		// private const float PrecisionAngleScaleFactor = 5f;
 
 		//make a method to adapte his value based on sprite resolution
-		private const float _scaleFactor = 0.03f;
+		protected const float _scaleFactor = 0.03f;
 
-		private bool eye_callback_registered = false;
+		protected bool eyeCallbackRegistered = false;
 
-		private static EyeData_v2 _eyeData = new EyeData_v2();
+		protected EyeData_v2 _eyeData = new EyeData_v2();
 
-		private bool _isUserDetected;
+		protected bool _isUserDetected;
 
-		private EyesPhysiologicalData _eyePhysiologicalData;
+		protected EyesPhysiologicalData _eyePhysiologicalData;
 
-		private GazeData _gazeData;
+		protected GazeData _gazeData;
 
-		private GameObject _currentObjectLookedAt = null;
+		protected GameObject _currentObjectLookedAt = null;
 
-		private AcquisitionData _acquisitionData;
+		protected AcquisitionData _acquisitionData;
 
 		#region Getters
 		public EyeData_v2 eyeData { get { return _eyeData; } }
@@ -100,12 +100,42 @@
 			EyeFramework();
 		}
 
-		private void FixedUpdate()
+		protected virtual void FixedUpdate()
 		{
-			GetEyePhysiologicalAndGazeData();
+			if (eyeCallbackRegistered)
+			{
+				GetEyePhysiologicalAndGazeData();
+			}
+
+			if (_gazeData.isValid)
+			{
+				if (Physics.Raycast(_gazeData.originWorld, _gazeData.directionWorld, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
+				{
+					_gazeData.distance = _gazeData.gazeHit.distance;
+					if (_gazeData.gazeHit.rigidbody != null && _gazeData.gazeHit.rigidbody.gameObject != _currentObjectLookedAt || _gazeData.gazeHit.collider.gameObject != _currentObjectLookedAt)
+					{
+						UpdateObjectLookedAt(_gazeData.gazeHit.rigidbody != null ? _gazeData.gazeHit.rigidbody.gameObject : _gazeData.gazeHit.collider.gameObject);
+					}
+				}
+				else
+				{
+					_gazeData.distance = _raycastMaxDistance;
+					UpdateObjectLookedAt(null);
+				}
+
+				if (gazeVisualFeedback)
+				{
+					_spriteRenderer.enabled = _gazeData.isValid;
+
+					if (_spriteRenderer.enabled)
+					{
+						SetPositionAndScale(_gazeData);
+					}
+				}
+			}
 		}
 
-		private void EyeFramework()
+		protected virtual void EyeFramework()
 		{
 			switch (SRanipal_Eye_Framework.Status)
 			{
@@ -122,25 +152,24 @@
 					return;
 			}
 
-			if (SRanipal_Eye_Framework.Instance.EnableEyeDataCallback && !eye_callback_registered)
+			if (SRanipal_Eye_Framework.Instance.EnableEyeDataCallback && !eyeCallbackRegistered)
 			{
 				SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
-				eye_callback_registered = true;
+				eyeCallbackRegistered = true;
 			}
-			else if (!SRanipal_Eye_Framework.Instance.EnableEyeDataCallback && eye_callback_registered)
+			else if (!SRanipal_Eye_Framework.Instance.EnableEyeDataCallback && eyeCallbackRegistered)
 			{
 				SRanipal_Eye_v2.WrapperUnRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
-				eye_callback_registered = false;
+				eyeCallbackRegistered = false;
 			}
 		}
 
-		Vector3 _gazeOriginCombinedLocal, _gazeDirectionCombinedLocal; // prevent allocating each timed frame
-		private void GetEyePhysiologicalAndGazeData()
+		protected virtual void GetEyePhysiologicalAndGazeData()
 		{
 			// -- EYE PHYSIOLOGICAL data --
 			_gazeData.isValid = false;
 
-			if (eye_callback_registered || SRanipal_Eye_API.GetEyeData_v2(ref _eyeData) == ViveSR.Error.WORK)
+			if (eyeCallbackRegistered || SRanipal_Eye_API.GetEyeData_v2(ref _eyeData) == ViveSR.Error.WORK)
 			{
 				_eyePhysiologicalData.leftEyePhysiologicalData.pupilDiameter = _eyeData.verbose_data.left.pupil_diameter_mm;
 				_eyePhysiologicalData.rightEyePhysiologicalData.pupilDiameter = _eyeData.verbose_data.right.pupil_diameter_mm;
@@ -210,36 +239,12 @@
 				_mainCamera = Camera.main;
 			}
 			_gazeData.originWorld = _mainCamera.transform.position;
-			_gazeData.directionWorld = _mainCamera.transform.TransformDirection(_gazeDirectionCombinedLocal);
+			_gazeData.directionWorld = _mainCamera.transform.TransformDirection(_gazeData.directionLocal);
 			_gazeData.isValid = true;
 			_isUserDetected = _eyeData.no_user;
 
 			_acquisitionData.frameSequence = _eyeData.frame_sequence;
 			_acquisitionData.timestamp = _eyeData.timestamp;
-
-			if (Physics.Raycast(_gazeData.originWorld, _gazeData.directionWorld, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
-			{
-				_gazeData.distance = _gazeData.gazeHit.distance;
-				if (_gazeData.gazeHit.rigidbody != null && _gazeData.gazeHit.rigidbody.gameObject != _currentObjectLookedAt || _gazeData.gazeHit.collider.gameObject != _currentObjectLookedAt)
-				{
-					UpdateObjectLookedAt(_gazeData.gazeHit.rigidbody != null ? _gazeData.gazeHit.rigidbody.gameObject : _gazeData.gazeHit.collider.gameObject);
-				}
-			}
-			else
-			{
-				_gazeData.distance = _raycastMaxDistance;
-				UpdateObjectLookedAt(null);
-			}
-
-			if (gazeVisualFeedback)
-			{
-				_spriteRenderer.enabled = _gazeData.isValid;
-
-				if (_spriteRenderer.enabled)
-				{
-					SetPositionAndScale(_gazeData);
-				}
-			}
 		}
 
 		private void SetPositionAndScale(GazeData gazeData)
@@ -278,18 +283,20 @@
 		// 	return maxPrecisionAngleDegrees * Mathf.Sin(maxPrecisionAngleDegrees * Mathf.Deg2Rad) * PrecisionAngleScaleFactor;
 		// }
 
-		private void Release()
+		protected virtual void Release()
 		{
-			if (eye_callback_registered)
+			if (eyeCallbackRegistered)
 			{
 				SRanipal_Eye_v2.WrapperUnRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
-				eye_callback_registered = false;
+				eyeCallbackRegistered = false;
 			}
 		}
 
-		private static void EyeCallback(ref EyeData_v2 eye_data)
+		protected virtual void EyeCallback(ref EyeData_v2 eyeData)
 		{
-			_eyeData = eye_data;
+			_eyeData = eyeData;
+
+			GetEyePhysiologicalAndGazeData();
 		}
 
 #if UNITY_EDITOR
