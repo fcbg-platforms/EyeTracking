@@ -30,8 +30,8 @@
 			_gazeData.isValid = true;
 			_isUserDetected = true;
 
-			_acquisitionData.frameSequence = Time.frameCount;
-			_acquisitionData.timestamp = Time.time;
+			_acquisitionData.sensorFrameSequence = Time.frameCount;
+			_acquisitionData.sensorTimestamp = Time.time;
 
 			if (Physics.Raycast(ray, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
 			{

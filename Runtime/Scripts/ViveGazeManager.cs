@@ -179,8 +179,8 @@
 			_gazeData.isValid = true;
 			_isUserDetected = _eyeData.no_user;
 
-			_acquisitionData.frameSequence = _eyeData.frame_sequence;
-			_acquisitionData.timestamp = _eyeData.timestamp;
+			_acquisitionData.sensorFrameSequence = _eyeData.frame_sequence;
+			_acquisitionData.sensorTimestamp = _eyeData.timestamp;
 		}
 
 		// private void UpdatePrecisionScale(float maxPrecisionAngleDegrees)
