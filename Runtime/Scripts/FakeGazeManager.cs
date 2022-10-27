@@ -61,7 +61,7 @@
 		public AcquisitionData acquisitionData { get { return _acquisitionData; } }
 
 		[Header("Debugging:")]
-		[SerializeField] private bool _skipCalibration = false;
+		[SerializeField] private bool _skipCalibration;
 
 		[SerializeField, Tooltip("Enable the gaze visualizer to highlight the gaze position.")]
 		private bool _gazeVisualFeedback;
@@ -94,8 +94,8 @@
 			_gazeData.isValid = true;
 			_isUserDetected = true;
 
-			_acquisitionData.frameSequence = _eyeData.frame_sequence;
-			_acquisitionData.timestamp = _eyeData.timestamp;
+			_acquisitionData.frameSequence = Time.frameCount;
+			_acquisitionData.timestamp = Time.time;
 
 			if (Physics.Raycast(ray, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
 			{
