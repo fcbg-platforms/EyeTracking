@@ -6,86 +6,22 @@
 	using ViveSR.anipal.Eye;
 
 	[RequireComponent(typeof(SpriteRenderer))]
-	public class ViveGazeManager : MonoBehaviour, IGazeManager
+	public class ViveGazeManager : BaseGazeManager
 	{
-		[Header("Settings")]
-		public bool ScaleAffectedByPrecision;
-
-		[SerializeField] protected bool _smoothMove = true;
-
-		[SerializeField][Range(1, 30)] protected int _smoothMoveSpeed = 30;
-
-		[Header("Eye Raycast")]
-		[SerializeField] protected int _raycastMaxDistance;
-		[SerializeField] protected LayerMask _raycastLayerMask;
-
-		protected Camera _mainCamera;
-
-		protected SpriteRenderer _spriteRenderer;
-		protected Vector3 _lastGazeDirection;
-
 		// private const float OffsetFromFarClipPlane = 10f;
 		// private const float PrecisionAngleScaleFactor = 5f;
 
 		//make a method to adapte his value based on sprite resolution
-		protected const float _scaleFactor = 0.03f;
-
-		protected bool eyeCallbackRegistered = false;
-
-		protected EyeData_v2 _eyeData = new EyeData_v2();
-
-		protected bool _isUserDetected;
-
-		protected EyesPhysiologicalData _eyePhysiologicalData;
-
-		protected GazeData _gazeData;
-
-		protected GameObject _currentObjectLookedAt = null;
-
-		protected AcquisitionData _acquisitionData;
-
-		#region Getters
-		public EyeData_v2 eyeData { get { return _eyeData; } }
-
-		#region interface implementation
-
-		public bool isUserDetected { get { return _isUserDetected; } }
-
-		public EyesPhysiologicalData eyePhysiologicalData { get { return _eyePhysiologicalData; } }
-
-		public GazeData gazeData { get { return _gazeData; } }
-		public GameObject objectLookedAt { get { return _currentObjectLookedAt; } }
-		public Action<GameObject> objectLookedChanged { get; set; }
-
-		public AcquisitionData acquisitionData { get { return _acquisitionData; } }
 
 		[Header("Debugging:")]
 		[SerializeField] private bool _skipCalibration = false;
+		private EyeData_v2 _eyeData = new EyeData_v2();
 
-		[SerializeField, Tooltip("Enable the gaze visualizer to highlight the gaze position.")]
-		private bool _gazeVisualFeedback;
-		public bool gazeVisualFeedback { get => _gazeVisualFeedback; set => _gazeVisualFeedback = value; }
+		public EyeData_v2 eyeData { get => _eyeData; }
 
-		#endregion
-		#endregion
-
-
-		// Singleton
-		public static ViveGazeManager instance = null;
-		private void Awake()
+		protected override void Start()
 		{
-			if (instance == null)
-				instance = this;
-			else if (instance != this)
-				Destroy(gameObject);
-		}
-
-		private void Start()
-		{
-			_mainCamera = Camera.main;
-
-			_spriteRenderer = GetComponent<SpriteRenderer>();
-			_spriteRenderer.enabled = gazeVisualFeedback && _gazeData.isValid;
+			base.Start();
 
 			if (!SRanipal_Eye_Framework.Instance.EnableEye)
 			{
@@ -104,7 +40,7 @@
 		{
 			if (eyeCallbackRegistered)
 			{
-				GetEyePhysiologicalAndGazeData();
+				UpdateEyePhysiologicalAndGazeData();
 			}
 
 			if (_gazeData.isValid)
@@ -164,7 +100,7 @@
 			}
 		}
 
-		protected virtual void GetEyePhysiologicalAndGazeData()
+		public override void UpdateEyePhysiologicalAndGazeData()
 		{
 			// -- EYE PHYSIOLOGICAL data --
 			_gazeData.isValid = false;
@@ -208,12 +144,12 @@
 			// {
 
 			// EYE DATA already updated in the previous section (eye physiological), so no need for another fetch
-			if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out _gazeData.originLocal, out _gazeData.directionLocal, _eyeData))
-				{ }
-			else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out _gazeData.originLocal, out _gazeData.directionLocal, _eyeData))
-				{ }
-			else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out _gazeData.originLocal, out _gazeData.directionLocal, _eyeData))
-				{ }
+			if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out _gazeData.originLocal, out _gazeData.directionLocal, eyeData))
+			{ }
+			else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out _gazeData.originLocal, out _gazeData.directionLocal, eyeData))
+			{ }
+			else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out _gazeData.originLocal, out _gazeData.directionLocal, eyeData))
+			{ }
 			else
 			{
 				return;
@@ -247,32 +183,6 @@
 			_acquisitionData.timestamp = _eyeData.timestamp;
 		}
 
-		private void SetPositionAndScale(GazeData gazeData)
-		{
-			Vector3 interpolatedGazeDirection = Vector3.Lerp(_lastGazeDirection, gazeData.directionWorld, _smoothMoveSpeed * Time.unscaledDeltaTime);
-
-			Vector3 usedDirection = _smoothMove ? interpolatedGazeDirection.normalized : gazeData.directionWorld.normalized;
-			transform.position = gazeData.originWorld + usedDirection * gazeData.distance;
-
-			transform.localScale = Vector3.one * gazeData.distance * _scaleFactor;
-
-			transform.forward = usedDirection.normalized;
-
-			_lastGazeDirection = usedDirection;
-		}
-
-		private void UpdateObjectLookedAt(GameObject newObject)
-		{
-			if (_currentObjectLookedAt != newObject)
-			{
-				_currentObjectLookedAt = newObject;
-				if (objectLookedChanged != null)
-				{
-					objectLookedChanged(_currentObjectLookedAt);
-				}
-			}
-		}
-
 		// private void UpdatePrecisionScale(float maxPrecisionAngleDegrees)
 		// {
 		// 	transform.localScale *= (1f + GetScaleAffectedByPrecisionAngle(maxPrecisionAngleDegrees));
@@ -296,31 +206,7 @@
 		{
 			_eyeData = eyeData;
 
-			GetEyePhysiologicalAndGazeData();
+			UpdateEyePhysiologicalAndGazeData();
 		}
-
-#if UNITY_EDITOR
-		/// <summary>
-		/// Called when the script is loaded or a value is changed in the
-		/// inspector (Called in the editor only).
-		/// </summary>
-		private void OnValidate()
-		{
-			if (gazeVisualFeedback)
-			{
-				_spriteRenderer = GetComponent<SpriteRenderer>();
-				_spriteRenderer.enabled = _gazeData.isValid;
-
-				if (_spriteRenderer.enabled)
-				{
-					SetPositionAndScale(_gazeData);
-				}
-			}
-			else
-			{
-				_spriteRenderer.enabled = false;
-			}
-		}
-#endif
 	}
 }
