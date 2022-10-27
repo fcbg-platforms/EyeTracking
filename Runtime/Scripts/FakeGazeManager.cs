@@ -56,6 +56,11 @@
 					SetPositionAndScale(_gazeData);
 				}
 			}
+
+			if (eyeDataUpdated != null)
+			{
+				eyeDataUpdated();
+			}
 		}
 	}
 }

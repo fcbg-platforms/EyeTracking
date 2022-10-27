@@ -52,6 +52,8 @@
 
 		public AcquisitionData acquisitionData { get { return _acquisitionData; } }
 
+		public Action eyeDataUpdated { get; }
+
 		[Header("Debugging:")]
 
 		[SerializeField, Tooltip("Enable the gaze visualizer to highlight the gaze position.")]

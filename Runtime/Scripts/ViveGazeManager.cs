@@ -181,6 +181,11 @@
 
 			_acquisitionData.sensorFrameSequence = _eyeData.frame_sequence;
 			_acquisitionData.sensorTimestamp = _eyeData.timestamp;
+
+			if (eyeDataUpdated != null)
+			{
+				eyeDataUpdated();
+			}
 		}
 
 		// private void UpdatePrecisionScale(float maxPrecisionAngleDegrees)
