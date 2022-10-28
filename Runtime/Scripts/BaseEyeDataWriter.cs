@@ -152,7 +152,7 @@ namespace EyeTracking
 
 		protected float _lastTimeWrite;
 
-		protected virtual void Start()
+		protected virtual void Awake()
 		{
 			_pendingEyeDataToWrite = new List<EyeDataOutput>();
 			_lastTimeWrite = Time.time;
