@@ -1,4 +1,4 @@
-namespace EyeTracking
+namespace EyeTracking.Saving
 {
 	using System.Collections.Generic;
 	using UnityEngine;

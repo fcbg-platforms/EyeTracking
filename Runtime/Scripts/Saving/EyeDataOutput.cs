@@ -1,4 +1,4 @@
-namespace EyeTracking
+namespace EyeTracking.Saving
 {
 	using UnityEngine;
 
