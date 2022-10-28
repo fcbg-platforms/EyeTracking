@@ -111,38 +111,38 @@ namespace EyeTracking
 				this.objectLookedAtLabel = iGazeManager.objectLookedAt.name;
 			}
 
-			float time { get; set; }
+			public float time { get; set; }
 			//  float luminance,
-			bool isUserDetected { get; set; }
+			public bool isUserDetected { get; set; }
 
-			int acquisitionDataSensorFrameSequence { get; set; }
-			float acquisitionDatasensorTimestamp { get; set; }
+			public int acquisitionDataSensorFrameSequence { get; set; }
+			public float acquisitionDatasensorTimestamp { get; set; }
 
-			float leftEyeOpenness { get; set; }
-			float rightEyeOpenness { get; set; }
+			public float leftEyeOpenness { get; set; }
+			public float rightEyeOpenness { get; set; }
 
-			float leftEyeWide { get; set; }
-			float rightEyeWide { get; set; }
-			float leftEyeSqueeze { get; set; }
-			float rightEyeSqueeze { get; set; }
-			float leftEyeFrown { get; set; }
-			float rightEyeFrown { get; set; }
+			public float leftEyeWide { get; set; }
+			public float rightEyeWide { get; set; }
+			public float leftEyeSqueeze { get; set; }
+			public float rightEyeSqueeze { get; set; }
+			public float leftEyeFrown { get; set; }
+			public float rightEyeFrown { get; set; }
 
-			float leftEyePupilDiameter { get; set; }
-			float rightEyePupilDiameter { get; set; }
+			public float leftEyePupilDiameter { get; set; }
+			public float rightEyePupilDiameter { get; set; }
 
-			Vector2 leftEyePupilPositionInSensorArea { get; set; }
-			Vector2 rightEyePupilPositionInSensorArea { get; set; }
+			public Vector2 leftEyePupilPositionInSensorArea { get; set; }
+			public Vector2 rightEyePupilPositionInSensorArea { get; set; }
 
-			bool gazeDataIsValid { get; set; }
-			Vector3 gazeDataOriginLocal { get; set; }
-			Vector3 gazeDataDirectionLocal { get; set; }
-			Vector3 gazeDataOriginWorld { get; set; }
-			Vector3 gazeDataDirectionWorld { get; set; }
-			float gazeDataDistance { get; set; }
-			Vector3 gazeDataHitPoint { get; set; }
+			public bool gazeDataIsValid { get; set; }
+			public Vector3 gazeDataOriginLocal { get; set; }
+			public Vector3 gazeDataDirectionLocal { get; set; }
+			public Vector3 gazeDataOriginWorld { get; set; }
+			public Vector3 gazeDataDirectionWorld { get; set; }
+			public float gazeDataDistance { get; set; }
+			public Vector3 gazeDataHitPoint { get; set; }
 
-			string objectLookedAtLabel { get; set; }
+			public string objectLookedAtLabel { get; set; }
 		}
 
 		[SerializeField]
