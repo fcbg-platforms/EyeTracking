@@ -75,6 +75,42 @@ namespace EyeTracking
 				this.objectLookedAtLabel = objectLookedAtLabel;
 			}
 
+			public EyeDataOutput(float time, IGazeManager iGazeManager)
+			{
+				this.time = time;
+				//  float luminance,
+				this.isUserDetected = iGazeManager.isUserDetected;
+
+				this.acquisitionDataSensorFrameSequence = iGazeManager.acquisitionData.sensorFrameSequence;
+				this.acquisitionDatasensorTimestamp = iGazeManager.acquisitionData.sensorTimestamp;
+
+				this.leftEyeOpenness = iGazeManager.eyePhysiologicalData.leftEyePhysiologicalData.eyeOpenness;
+				this.rightEyeOpenness = iGazeManager.eyePhysiologicalData.rightEyePhysiologicalData.eyeOpenness;
+
+				this.leftEyeWide = leftEyeWide;
+				this.rightEyeWide = rightEyeWide;
+				this.leftEyeSqueeze = leftEyeSqueeze;
+				this.rightEyeSqueeze = rightEyeSqueeze;
+				this.leftEyeFrown = leftEyeFrown;
+				this.rightEyeFrown = rightEyeFrown;
+
+				this.leftEyePupilDiameter = leftEyePupilDiameter;
+				this.rightEyePupilDiameter = rightEyePupilDiameter;
+
+				this.leftEyePupilPositionInSensorArea = leftEyePupilPositionInSensorArea;
+				this.rightEyePupilPositionInSensorArea = rightEyePupilPositionInSensorArea;
+
+				this.gazeDataIsValid = iGazeManager.gazeData.isValid;
+				this.gazeDataOriginLocal = iGazeManager.gazeData.originLocal;
+				this.gazeDataDirectionLocal = iGazeManager.gazeData.directionLocal;
+				this.gazeDataOriginWorld = iGazeManager.gazeData.originWorld;
+				this.gazeDataDirectionWorld = iGazeManager.gazeData.directionWorld;
+				this.gazeDataDistance = iGazeManager.gazeData.distance;
+				this.gazeDataHitPoint = iGazeManager.gazeData.gazeHit.point;
+
+				this.objectLookedAtLabel = iGazeManager.objectLookedAt.name;
+			}
+
 			float time { get; set; }
 			//  float luminance,
 			bool isUserDetected { get; set; }
