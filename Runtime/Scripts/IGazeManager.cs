@@ -19,9 +19,9 @@
 		GazeData gazeData { get; }
 
 		GameObject objectLookedAt { get; }
-		Action<GameObject> objectLookedChanged { get; }
+		Action<GameObject> objectLookedChanged { get; set; }
 
-		Action eyeDataUpdated { get; }
+		Action eyeDataUpdated { get; set; }
 
 		// Debug
 		bool gazeVisualFeedback { get; set; }

@@ -52,7 +52,7 @@
 
 		public AcquisitionData acquisitionData { get { return _acquisitionData; } }
 
-		public Action eyeDataUpdated { get; }
+		public Action eyeDataUpdated { get; set; }
 
 		[Header("Debugging:")]
 
