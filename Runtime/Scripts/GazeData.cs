@@ -30,13 +30,13 @@ namespace EyeTracking
 		public Vector3 directionWorld;
 
 		/// <summary>
-		/// The global coordinates of the raycastHit.
-		/// </summary>
-		public RaycastHit gazeHit;
-
-		/// <summary>
 		/// The distance position from the origin of the gaze ray given in meters.
 		/// </summary>
 		public float distance;
+
+		/// <summary>
+		/// The global coordinates of the raycastHit.
+		/// </summary>
+		public RaycastHit gazeHit;
 	}
 }

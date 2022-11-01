@@ -9,73 +9,9 @@
 	/// A Fake Gaze Manager that is controlled by the Mouse.
 	/// </summary>
 	[RequireComponent(typeof(SpriteRenderer))]
-	public class FakeGazeManager : MonoBehaviour, IGazeManager
+	public class FakeGazeManager : BaseGazeManager
 	{
-		[Header("Settings")]
-		public bool ScaleAffectedByPrecision;
-		[SerializeField] private bool _smoothMove = true;
-
-		[SerializeField][Range(1, 30)] private int _smoothMoveSpeed = 30;
 		[SerializeField] private bool _updateMainCameraEachFrame;
-
-		[Header("Eye Raycast")]
-		[SerializeField] private int _raycastMaxDistance;
-		[SerializeField] private LayerMask _raycastLayerMask;
-
-		private Camera _mainCamera;
-
-		private SpriteRenderer _spriteRenderer;
-		private Vector3 _lastGazeDirection;
-
-		//make a method to adapte his value based on sprite resolution
-		private const float _scaleFactor = 0.03f;
-
-		//these are get
-		private RaycastHit _gazeHit;
-
-		private bool _isUserDetected;
-
-		private EyesPhysiologicalData _eyePhysiologicalData;
-
-		private GazeData _gazeData;
-
-		private GameObject _currentObjectLookedAt = null;
-
-		private AcquisitionData _acquisitionData;
-
-		#region interface implementation
-
-		public bool isUserDetected { get { return _isUserDetected; } }
-
-		public EyesPhysiologicalData eyePhysiologicalData { get { return _eyePhysiologicalData; } }
-
-		public GazeData gazeData { get { return _gazeData; } }
-
-		/// <summary>
-		/// The object currently looked at, if any.
-		/// Note: if a parent has a rigidbody, that gameObject will be returned instead of the one having the collider.
-		/// </summary>
-		public GameObject objectLookedAt { get { return _currentObjectLookedAt; } }
-		public Action<GameObject> objectLookedChanged { get; set; }
-
-		public AcquisitionData acquisitionData { get { return _acquisitionData; } }
-
-		[Header("Debugging:")]
-		[SerializeField] private bool _skipCalibration;
-
-		[SerializeField, Tooltip("Enable the gaze visualizer to highlight the gaze position.")]
-		private bool _gazeVisualFeedback;
-		public bool gazeVisualFeedback { get => _gazeVisualFeedback; set => _gazeVisualFeedback = value; }
-
-		#endregion
-
-		private void Start()
-		{
-			_mainCamera = Camera.main;
-
-			_spriteRenderer = GetComponent<SpriteRenderer>();
-			_spriteRenderer.enabled = gazeVisualFeedback && _gazeData.isValid;
-		}
 
 		private void Update()
 		{
@@ -83,10 +19,10 @@
 			{
 				_mainCamera = Camera.main;
 			}
-			GetEyePhysiologicalAndGazeData();
+			UpdateEyePhysiologicalAndGazeData();
 		}
 
-		private void GetEyePhysiologicalAndGazeData()
+		public override void UpdateEyePhysiologicalAndGazeData()
 		{
 			Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 			_gazeData.originWorld = _mainCamera.transform.position;
@@ -94,8 +30,8 @@
 			_gazeData.isValid = true;
 			_isUserDetected = true;
 
-			_acquisitionData.frameSequence = Time.frameCount;
-			_acquisitionData.timestamp = Time.time;
+			_acquisitionData.sensorFrameSequence = Time.frameCount;
+			_acquisitionData.sensorTimestamp = Time.time;
 
 			if (Physics.Raycast(ray, out _gazeData.gazeHit, maxDistance: _raycastMaxDistance, layerMask: _raycastLayerMask))
 			{
@@ -120,31 +56,10 @@
 					SetPositionAndScale(_gazeData);
 				}
 			}
-		}
 
-		private void SetPositionAndScale(GazeData gazeData)
-		{
-			Vector3 interpolatedGazeDirection = Vector3.Lerp(_lastGazeDirection, gazeData.directionWorld, _smoothMoveSpeed * Time.unscaledDeltaTime);
-
-			Vector3 usedDirection = _smoothMove ? interpolatedGazeDirection.normalized : gazeData.directionWorld.normalized;
-			transform.position = gazeData.originWorld + usedDirection * gazeData.distance;
-
-			transform.localScale = Vector3.one * gazeData.distance * _scaleFactor;
-
-			transform.forward = usedDirection.normalized;
-
-			_lastGazeDirection = usedDirection;
-		}
-
-		private void UpdateObjectLookedAt(GameObject newObject)
-		{
-			if (_currentObjectLookedAt != newObject)
+			if (eyeDataUpdated != null)
 			{
-				_currentObjectLookedAt = newObject;
-				if (objectLookedChanged != null)
-				{
-					objectLookedChanged(_currentObjectLookedAt);
-				}
+				eyeDataUpdated();
 			}
 		}
 	}

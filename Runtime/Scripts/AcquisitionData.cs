@@ -7,11 +7,11 @@ namespace EyeTracking
 		/// <summary>
 		/// The frame sequence.
 		/// </summary>
-		public int frameSequence;
+		public int sensorFrameSequence;
 
 		/// <summary>
 		/// The time in ms when the frame was capturing.
 		/// </summary>
-		public float timestamp;
+		public float sensorTimestamp;
 	}
 }

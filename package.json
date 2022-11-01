@@ -1,8 +1,8 @@
 {
   "name": "ch.fcbg.eye-tracking",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "displayName": "Eye Tracking",
-  "description": "A library package/framework to use efficiently eye tracking.",
+  "description": "A library package/framework to build a common base for our experiments that use eye tracking.",
   "unity": "2020.1",
   "unityRelease": "0f1",
   "dependencies": {},

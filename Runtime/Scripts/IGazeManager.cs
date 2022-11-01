@@ -8,21 +8,22 @@
 	{
 		bool isUserDetected { get; }
 
-		EyesPhysiologicalData eyePhysiologicalData { get; }
-
-		GazeData gazeData { get; }
-
-		GameObject objectLookedAt { get; }
-		Action<GameObject> objectLookedChanged { get; }
-
 		/// <summary>
 		/// the data from the aqcuisition
 		/// </summary>
 		/// <value></value>
 		AcquisitionData acquisitionData { get; }
 
+		EyesPhysiologicalData eyePhysiologicalData { get; }
+
+		GazeData gazeData { get; }
+
+		GameObject objectLookedAt { get; }
+		Action<GameObject> objectLookedChanged { get; set; }
+
+		Action eyeDataUpdated { get; set; }
+
 		// Debug
 		bool gazeVisualFeedback { get; set; }
-
 	}
 }
