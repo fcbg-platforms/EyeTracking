@@ -84,18 +84,18 @@ namespace EyeTracking.Saving
 			this.leftEyeOpenness = iGazeManager.eyePhysiologicalData.leftEyePhysiologicalData.eyeOpenness;
 			this.rightEyeOpenness = iGazeManager.eyePhysiologicalData.rightEyePhysiologicalData.eyeOpenness;
 
-			this.leftEyeWide = leftEyeWide;
-			this.rightEyeWide = rightEyeWide;
-			this.leftEyeSqueeze = leftEyeSqueeze;
-			this.rightEyeSqueeze = rightEyeSqueeze;
-			this.leftEyeFrown = leftEyeFrown;
-			this.rightEyeFrown = rightEyeFrown;
+			this.leftEyeWide = iGazeManager.eyePhysiologicalData.leftEyePhysiologicalData.eyeWide;
+			this.rightEyeWide = iGazeManager.eyePhysiologicalData.rightEyePhysiologicalData.eyeWide;
+			this.leftEyeSqueeze = iGazeManager.eyePhysiologicalData.leftEyePhysiologicalData.eyeSqueeze;
+			this.rightEyeSqueeze = iGazeManager.eyePhysiologicalData.rightEyePhysiologicalData.eyeSqueeze;
+			this.leftEyeFrown = iGazeManager.eyePhysiologicalData.leftEyePhysiologicalData.eyeFrown;
+			this.rightEyeFrown = iGazeManager.eyePhysiologicalData.rightEyePhysiologicalData.eyeFrown;
 
-			this.leftEyePupilDiameter = leftEyePupilDiameter;
-			this.rightEyePupilDiameter = rightEyePupilDiameter;
+			this.leftEyePupilDiameter = iGazeManager.eyePhysiologicalData.leftEyePhysiologicalData.pupilDiameter;
+			this.rightEyePupilDiameter = iGazeManager.eyePhysiologicalData.rightEyePhysiologicalData.pupilDiameter;
 
-			this.leftEyePupilPositionInSensorArea = leftEyePupilPositionInSensorArea;
-			this.rightEyePupilPositionInSensorArea = rightEyePupilPositionInSensorArea;
+			this.leftEyePupilPositionInSensorArea = iGazeManager.eyePhysiologicalData.leftEyePhysiologicalData.pupilPositionInSensorArea;
+			this.rightEyePupilPositionInSensorArea = iGazeManager.eyePhysiologicalData.rightEyePhysiologicalData.pupilPositionInSensorArea;
 
 			this.gazeDataIsValid = iGazeManager.gazeData.isValid;
 			this.gazeDataOriginLocal = iGazeManager.gazeData.originLocal;
@@ -105,7 +105,7 @@ namespace EyeTracking.Saving
 			this.gazeDataDistance = iGazeManager.gazeData.distance;
 			this.gazeDataHitPoint = iGazeManager.gazeData.gazeHit.point;
 
-			this.objectLookedAtLabel = iGazeManager.objectLookedAt.name;
+			this.objectLookedAtLabel = iGazeManager.objectLookedAt != null ? iGazeManager.objectLookedAt.name : string.Empty;
 		}
 
 		public float time { get; set; }
