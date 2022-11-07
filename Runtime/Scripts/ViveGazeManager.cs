@@ -84,7 +84,7 @@
 					Debug.LogWarning("Error with Eye Tracking.");
 					return;
 				default:
-					Debug.LogWarning(string.Format("SRanival status not recognized: {1}.", SRanipal_Eye_Framework.Status));
+					Debug.LogWarning(string.Format("SRanipal status not recognized: {0}.", SRanipal_Eye_Framework.Status));
 					return;
 			}
 
