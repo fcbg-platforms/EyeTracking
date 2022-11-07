@@ -31,9 +31,10 @@
 			else if (!_skipCalibration)
 			{
 				SRanipal_Eye_v2.LaunchEyeCalibration();     // Perform calibration for eye tracking.
+				Debug.Log("Eye Calibration done !");
 			}
 
-			EyeFramework();
+			Invoke(nameof(EyeFramework), 0.01f);
 		}
 
 		protected virtual void FixedUpdate()
