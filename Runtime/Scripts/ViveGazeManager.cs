@@ -24,7 +24,10 @@
 		Vector3 _mainCameraPosition;
 		Matrix4x4 _mainCameraMatrix4x4;
 
+		bool _isVrSetup;
+
 		#region Unity callbacks
+
 		protected override void Start()
 		{
 			base.Start();
@@ -39,12 +42,14 @@
 				SRanipal_Eye_v2.LaunchEyeCalibration();     // Perform calibration for eye tracking.
 				Debug.Log("Eye Calibration done !");
 			}
-
-			Invoke(nameof(SetupEyeFramework), 0.01f);
 		}
 
 		protected virtual void Update()
 		{
+			if (!_isVrSetup)
+			{
+				SetupEyeFramework();
+			}
 			_mainCameraTransform = _mainCamera.transform;
 			_mainCameraPosition = _mainCamera.transform.position;
 			_mainCameraMatrix4x4 = _mainCamera.transform.localToWorldMatrix;
@@ -107,6 +112,7 @@
 			switch (SRanipal_Eye_Framework.Status)
 			{
 				case SRanipal_Eye_Framework.FrameworkStatus.WORKING:
+					_isVrSetup = true;
 					break;
 				case SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT:
 					Debug.LogWarning("Eye Tracking not supported.");
