@@ -46,10 +46,10 @@
 
 		protected virtual void Update()
 		{
-			if (!_isVrSetup)
-			{
-				SetupEyeFramework();
-			}
+			// if (!_isVrSetup)
+			// {
+			// 	SetupEyeFramework();
+			// }
 			_mainCameraTransform = _mainCamera.transform;
 			_mainCameraPosition = _mainCamera.transform.position;
 			_mainCameraMatrix4x4 = _mainCamera.transform.localToWorldMatrix;
