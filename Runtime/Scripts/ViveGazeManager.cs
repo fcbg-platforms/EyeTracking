@@ -19,6 +19,12 @@
 
 		public EyeData_v2 eyeData { get => _eyeData; }
 
+
+		Transform _mainCameraTransform;
+		Vector3 _mainCameraPosition;
+		Matrix4x4 _mainCameraMatrix4x4;
+
+		#region Unity callbacks
 		protected override void Start()
 		{
 			base.Start();
@@ -34,12 +40,19 @@
 				Debug.Log("Eye Calibration done !");
 			}
 
-			Invoke(nameof(EyeFramework), 0.01f);
+			Invoke(nameof(SetupEyeFramework), 0.01f);
+		}
+
+		protected virtual void Update()
+		{
+			_mainCameraTransform = _mainCamera.transform;
+			_mainCameraPosition = _mainCamera.transform.position;
+			_mainCameraMatrix4x4 = _mainCamera.transform.localToWorldMatrix;
 		}
 
 		protected virtual void FixedUpdate()
 		{
-			if (eyeCallbackRegistered)
+			if (!eyeCallbackRegistered)
 			{
 				UpdateEyePhysiologicalAndGazeData();
 			}
@@ -72,7 +85,24 @@
 			}
 		}
 
-		protected virtual void EyeFramework()
+		protected void OnApplicationQuit()
+		{
+			Release();
+		}
+
+		protected void OnDisable()
+		{
+			Release();
+		}
+
+		protected void OnDestroy()
+		{
+			Release();
+		}
+
+		#endregion
+
+		protected virtual void SetupEyeFramework()
 		{
 			switch (SRanipal_Eye_Framework.Status)
 			{
@@ -93,11 +123,6 @@
 			{
 				SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
 				eyeCallbackRegistered = true;
-			}
-			else if (!SRanipal_Eye_Framework.Instance.EnableEyeDataCallback && eyeCallbackRegistered)
-			{
-				SRanipal_Eye_v2.WrapperUnRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
-				eyeCallbackRegistered = false;
 			}
 		}
 
@@ -155,28 +180,13 @@
 			{
 				return;
 			}
-			// }
-			// else
-			// {
-			// 	if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.COMBINE, out _gazeOriginCombinedLocal, out _gazeDirectionCombinedLocal))
-			// 	{ }
-			// 	else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.LEFT, out _gazeOriginCombinedLocal, out _gazeDirectionCombinedLocal))
-			// 	{ }
-			// 	else if (SRanipal_Eye_v2.GetGazeRay(GazeIndex.RIGHT, out _gazeOriginCombinedLocal, out _gazeDirectionCombinedLocal))
-			// 	{ }
-			// 	else
-			// 	{
-			// 		_gazeRay.isValid = false;
-			// 		return;
-			// 	}
-			// }
 
 			if (_mainCamera == null)
 			{
-				_mainCamera = Camera.main;
+				throw new NullReferenceException();
 			}
-			_gazeData.originWorld = _mainCamera.transform.position;
-			_gazeData.directionWorld = _mainCamera.transform.TransformDirection(_gazeData.directionLocal);
+			_gazeData.originWorld = _mainCameraPosition;
+			_gazeData.directionWorld = _mainCameraMatrix4x4.MultiplyVector(_gazeData.directionLocal);
 			_gazeData.isValid = true;
 			_isUserDetected = _eyeData.no_user;
 

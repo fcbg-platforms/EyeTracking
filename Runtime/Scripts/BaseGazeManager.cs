@@ -62,6 +62,8 @@
 
 		#endregion
 
+		#region Unity callbacks
+
 		protected virtual void Start()
 		{
 			_mainCamera = Camera.main;
@@ -69,6 +71,8 @@
 			_spriteRenderer = GetComponent<SpriteRenderer>();
 			_spriteRenderer.enabled = gazeVisualFeedback && _gazeData.isValid;
 		}
+
+		#endregion
 
 		public abstract void UpdateEyePhysiologicalAndGazeData();
 
