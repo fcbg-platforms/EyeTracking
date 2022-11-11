@@ -19,6 +19,7 @@
 		GazeData gazeData { get; }
 
 		GameObject objectLookedAt { get; }
+		string objectLookedAtLabel { get; }
 		Action<GameObject> objectLookedChanged { get; set; }
 
 		Action eyeDataUpdated { get; set; }

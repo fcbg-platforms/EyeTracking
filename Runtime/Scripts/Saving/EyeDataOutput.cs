@@ -105,7 +105,7 @@ namespace EyeTracking.Saving
 			this.gazeDataDistance = iGazeManager.gazeData.distance;
 			this.gazeDataHitPoint = iGazeManager.gazeData.gazeHit.point;
 
-			this.objectLookedAtLabel = iGazeManager.objectLookedAt != null ? iGazeManager.objectLookedAt.name : string.Empty;
+			this.objectLookedAtLabel = iGazeManager.objectLookedAtLabel;
 		}
 
 		public float time { get; set; }

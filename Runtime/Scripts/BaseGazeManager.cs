@@ -37,6 +37,7 @@
 		protected GazeData _gazeData;
 
 		protected GameObject _currentObjectLookedAt = null;
+		protected string _currentObjectLookedAtLabel;
 
 		protected AcquisitionData _acquisitionData;
 
@@ -48,6 +49,7 @@
 
 		public GazeData gazeData { get { return _gazeData; } }
 		public GameObject objectLookedAt { get { return _currentObjectLookedAt; } }
+		public string objectLookedAtLabel { get { return _currentObjectLookedAtLabel; } }
 		public Action<GameObject> objectLookedChanged { get; set; }
 
 		public AcquisitionData acquisitionData { get { return _acquisitionData; } }
@@ -62,6 +64,8 @@
 
 		#endregion
 
+		#region Unity callbacks
+
 		protected virtual void Start()
 		{
 			_mainCamera = Camera.main;
@@ -69,6 +73,8 @@
 			_spriteRenderer = GetComponent<SpriteRenderer>();
 			_spriteRenderer.enabled = gazeVisualFeedback && _gazeData.isValid;
 		}
+
+		#endregion
 
 		public abstract void UpdateEyePhysiologicalAndGazeData();
 
@@ -91,6 +97,7 @@
 			if (_currentObjectLookedAt != newObject)
 			{
 				_currentObjectLookedAt = newObject;
+				_currentObjectLookedAtLabel = newObject != null ? newObject.name : string.Empty;
 				if (objectLookedChanged != null)
 				{
 					objectLookedChanged(_currentObjectLookedAt);
