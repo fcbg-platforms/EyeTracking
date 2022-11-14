@@ -149,11 +149,11 @@
 				_eyePhysiologicalData.rightEyePhysiologicalData.eyeOpenness = _eyeData.verbose_data.right.eye_openness;
 
 				_eyePhysiologicalData.leftEyePhysiologicalData.eyeFrown = _eyeData.expression_data.left.eye_frown;
-				_eyePhysiologicalData.leftEyePhysiologicalData.eyeSqueeze = _eyeData.expression_data.left.eye_wide;
-				_eyePhysiologicalData.leftEyePhysiologicalData.eyeWide = _eyeData.expression_data.left.eye_frown;
+				_eyePhysiologicalData.leftEyePhysiologicalData.eyeSqueeze = _eyeData.expression_data.left.eye_squeeze;
+				_eyePhysiologicalData.leftEyePhysiologicalData.eyeWide = _eyeData.expression_data.left.eye_wide;
 				_eyePhysiologicalData.rightEyePhysiologicalData.eyeFrown = _eyeData.expression_data.right.eye_frown;
-				_eyePhysiologicalData.rightEyePhysiologicalData.eyeSqueeze = _eyeData.expression_data.right.eye_wide;
-				_eyePhysiologicalData.rightEyePhysiologicalData.eyeWide = _eyeData.expression_data.right.eye_frown;
+				_eyePhysiologicalData.rightEyePhysiologicalData.eyeSqueeze = _eyeData.expression_data.right.eye_squeeze;
+				_eyePhysiologicalData.rightEyePhysiologicalData.eyeWide = _eyeData.expression_data.right.eye_wide;
 			}
 			else
 			{
