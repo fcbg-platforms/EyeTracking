@@ -16,6 +16,8 @@
 
 		EyesPhysiologicalData eyePhysiologicalData { get; }
 
+		HeadData headData { get; }
+
 		GazeData gazeData { get; }
 
 		GameObject objectLookedAt { get; }

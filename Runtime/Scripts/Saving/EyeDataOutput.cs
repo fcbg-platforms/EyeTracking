@@ -28,6 +28,9 @@ namespace EyeTracking.Saving
 			Vector2 leftEyePupilPositionInSensorArea,
 			Vector2 rightEyePupilPositionInSensorArea,
 
+			Vector3 headPositionWorld,
+			Vector3 headForwardDirectionWorld,
+
 			bool gazeDataIsValid,
 			Vector3 gazeDataOriginLocal,
 			Vector3 gazeDataDirectionLocal,
@@ -60,6 +63,9 @@ namespace EyeTracking.Saving
 
 			this.leftEyePupilPositionInSensorArea = leftEyePupilPositionInSensorArea;
 			this.rightEyePupilPositionInSensorArea = rightEyePupilPositionInSensorArea;
+
+			this.headPositionWorld = headPositionWorld;
+			this.headForwardDirectionWorld = headForwardDirectionWorld;
 
 			this.gazeDataIsValid = gazeDataIsValid;
 			this.gazeDataOriginLocal = gazeDataOriginLocal;
@@ -97,6 +103,9 @@ namespace EyeTracking.Saving
 			this.leftEyePupilPositionInSensorArea = iGazeManager.eyePhysiologicalData.leftEyePhysiologicalData.pupilPositionInSensorArea;
 			this.rightEyePupilPositionInSensorArea = iGazeManager.eyePhysiologicalData.rightEyePhysiologicalData.pupilPositionInSensorArea;
 
+			this.headPositionWorld = iGazeManager.headData.positionWorld;
+			this.headForwardDirectionWorld = iGazeManager.headData.forwardDirectionWorld;
+
 			this.gazeDataIsValid = iGazeManager.gazeData.isValid;
 			this.gazeDataOriginLocal = iGazeManager.gazeData.originLocal;
 			this.gazeDataDirectionLocal = iGazeManager.gazeData.directionLocal;
@@ -130,6 +139,9 @@ namespace EyeTracking.Saving
 
 		public Vector2 leftEyePupilPositionInSensorArea { get; set; }
 		public Vector2 rightEyePupilPositionInSensorArea { get; set; }
+
+		public Vector3 headPositionWorld { get; set; }
+		public Vector3 headForwardDirectionWorld { get; set; }
 
 		public bool gazeDataIsValid { get; set; }
 		public Vector3 gazeDataOriginLocal { get; set; }
