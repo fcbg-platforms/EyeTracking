@@ -24,8 +24,6 @@
 		Vector3 _mainCameraPosition;
 		Matrix4x4 _mainCameraMatrix4x4;
 
-		bool _isVrSetup;
-
 		#region Unity callbacks
 
 		protected override void Start()
@@ -88,6 +86,10 @@
 					}
 				}
 			}
+			else
+			{
+				UpdateObjectLookedAt(null);
+			}
 		}
 
 		protected void OnApplicationQuit()
@@ -112,7 +114,6 @@
 			switch (SRanipal_Eye_Framework.Status)
 			{
 				case SRanipal_Eye_Framework.FrameworkStatus.WORKING:
-					_isVrSetup = true;
 					break;
 				case SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT:
 					Debug.LogWarning("Eye Tracking not supported.");
