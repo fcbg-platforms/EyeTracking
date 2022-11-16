@@ -35,6 +35,7 @@
 		protected EyesPhysiologicalData _eyePhysiologicalData;
 
 		protected GazeData _gazeData;
+		protected HeadData _headData;
 
 		protected GameObject _currentObjectLookedAt = null;
 		protected string _currentObjectLookedAtLabel;
@@ -47,6 +48,7 @@
 
 		public EyesPhysiologicalData eyePhysiologicalData { get { return _eyePhysiologicalData; } }
 
+		public HeadData headData { get { return _headData; } }
 		public GazeData gazeData { get { return _gazeData; } }
 		public GameObject objectLookedAt { get { return _currentObjectLookedAt; } }
 		public string objectLookedAtLabel { get { return _currentObjectLookedAtLabel; } }
@@ -72,6 +74,12 @@
 
 			_spriteRenderer = GetComponent<SpriteRenderer>();
 			_spriteRenderer.enabled = gazeVisualFeedback && _gazeData.isValid;
+		}
+
+		protected virtual void Update()
+		{
+			_headData.positionWorld = _mainCamera.transform.position;
+			_headData.forwardDirectionWorld = _mainCamera.transform.forward;
 		}
 
 		#endregion

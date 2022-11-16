@@ -13,12 +13,13 @@
 	{
 		[SerializeField] private bool _updateMainCameraEachFrame;
 
-		private void Update()
+		protected override void Update()
 		{
 			if (_updateMainCameraEachFrame)
 			{
 				_mainCamera = Camera.main;
 			}
+			base.Update();
 			UpdateEyePhysiologicalAndGazeData();
 		}
 

@@ -21,7 +21,6 @@
 
 
 		Transform _mainCameraTransform;
-		Vector3 _mainCameraPosition;
 		Matrix4x4 _mainCameraMatrix4x4;
 
 		#region Unity callbacks
@@ -42,14 +41,14 @@
 			}
 		}
 
-		protected virtual void Update()
+		protected override void Update()
 		{
 			// if (!_isVrSetup)
 			// {
 			// 	SetupEyeFramework();
 			// }
+			base.Update();
 			_mainCameraTransform = _mainCamera.transform;
-			_mainCameraPosition = _mainCamera.transform.position;
 			_mainCameraMatrix4x4 = _mainCamera.transform.localToWorldMatrix;
 		}
 
@@ -192,7 +191,7 @@
 			{
 				throw new NullReferenceException();
 			}
-			_gazeData.originWorld = _mainCameraPosition;
+			_gazeData.originWorld = _headData.positionWorld + _gazeData.originLocal;
 			_gazeData.directionWorld = _mainCameraMatrix4x4.MultiplyVector(_gazeData.directionLocal);
 			_gazeData.isValid = true;
 			_isUserDetected = _eyeData.no_user;
