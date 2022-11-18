@@ -101,12 +101,18 @@ namespace ViveSR
                         }
                         else
                         {
-                            if (result == Error.NOT_SUPPORT_EYE_TRACKING)
-                            {
-                                Status = FrameworkStatus.NOT_SUPPORT;
-                                EnableEyeDataCallback = false;
-                                Debug.Log("[SRanipal] Current HMD do not support eye tracking!");
-                            }
+							if (result == Error.DEVICE_NOT_FOUND)
+							{
+								Status = FrameworkStatus.ERROR;
+								Debug.Log("[SRanipal] Current device not found. Retry in 5sec!");
+								Invoke(nameof(StartFramework), 5f);
+							}
+							else if (result == Error.NOT_SUPPORT_EYE_TRACKING)
+							{
+								Status = FrameworkStatus.NOT_SUPPORT;
+								EnableEyeDataCallback = false;
+								Debug.Log("[SRanipal] Current HMD do not support eye tracking!");
+							}
                             else
                             {
                                 Status = FrameworkStatus.ERROR;
