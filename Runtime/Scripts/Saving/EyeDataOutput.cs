@@ -4,6 +4,7 @@ namespace EyeTracking.Saving
 
 	public class EyeDataOutput
 	{
+		public EyeDataOutput() { }
 		public EyeDataOutput(
 			float time,
 			//  float luminance,
