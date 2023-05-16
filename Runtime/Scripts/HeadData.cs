@@ -2,6 +2,9 @@ namespace EyeTracking
 {
 	using UnityEngine;
 
+	/// <summary>
+	/// Contains the data of the head position/orientation.
+	/// </summary>
 	public struct HeadData
 	{
 		/// <summary>

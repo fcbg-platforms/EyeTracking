@@ -8,6 +8,10 @@ namespace EyeTracking.Saving
 
 	}
 
+	/// <summary>
+	/// Abstract class that can be used to save the eye data as a csv.
+	/// </summary>
+	/// <typeparam name="TEyeDataOutput">The eye data output.</typeparam>
 	public abstract class BaseEyeDataWriter<TEyeDataOutput> : MonoBehaviour where TEyeDataOutput : EyeDataOutput
 	{
 		[SerializeField]

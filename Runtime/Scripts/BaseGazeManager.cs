@@ -4,6 +4,11 @@
 	using System.Runtime.InteropServices;
 	using UnityEngine;
 
+	/// <summary>
+	/// An abstract Base class for the gaze management system.
+	/// Inherit it with device-specific implementation, to get eye data such as gaze direction.
+	/// This script is also the one that check what is the object looked each frame.
+	/// </summary>
 	[RequireComponent(typeof(SpriteRenderer))]
 	public abstract class BaseGazeManager : MonoBehaviour, IGazeManager
 	{
@@ -84,6 +89,10 @@
 
 		#endregion
 
+		/// <summary>
+		/// When called, will update the eye and gaze data.
+		/// The implementation is device-specific.
+		/// </summary>
 		public abstract void UpdateEyePhysiologicalAndGazeData();
 
 		protected virtual void SetPositionAndScale(GazeData gazeData)
@@ -100,6 +109,11 @@
 			_lastGazeDirection = usedDirection;
 		}
 
+		/// <summary>
+		/// Use this method to update the currently looked object in the GazeManager.
+		/// Rise the objectLookedChanged event.
+		/// </summary>
+		/// <param name="newObject">Object currently looked at.</param>
 		protected void UpdateObjectLookedAt(GameObject newObject)
 		{
 			if (_currentObjectLookedAt != newObject)

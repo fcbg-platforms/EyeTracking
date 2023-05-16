@@ -2,6 +2,9 @@ namespace EyeTracking
 {
 	using UnityEngine;
 
+	/// <summary>
+	/// Class containing the physiological data of a single eye, such as openess and diameters.
+	/// </summary>
 	public struct SingleEyePhysiologicalData
 	{
 		/// <summary>
@@ -36,6 +39,9 @@ namespace EyeTracking
 		public Vector2 pupilPositionInSensorArea;
 	}
 
+	/// <summary>
+	/// Contains the physiological data of the eyes (left and right).
+	/// </summary>
 	public struct EyesPhysiologicalData
 	{
 		public SingleEyePhysiologicalData leftEyePhysiologicalData;

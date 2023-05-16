@@ -4,6 +4,9 @@
 	using UnityEngine;
 	using ViveSR.anipal.Eye;
 
+	/// <summary>
+	/// Interface that must be implemented for gaze managers, to have a standardized output.
+	/// </summary>
 	public interface IGazeManager
 	{
 		bool isUserDetected { get; }

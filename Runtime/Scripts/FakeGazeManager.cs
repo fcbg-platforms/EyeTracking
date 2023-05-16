@@ -6,7 +6,8 @@
 	using ViveSR.anipal.Eye;
 
 	/// <summary>
-	/// A Fake Gaze Manager that is controlled by the Mouse.
+	/// A Fake Gaze Manager that can be used on a desktop.
+	/// The gaze is controlled by the Mouse.
 	/// </summary>
 	[RequireComponent(typeof(SpriteRenderer))]
 	public class FakeGazeManager : BaseGazeManager
@@ -23,6 +24,7 @@
 			UpdateEyePhysiologicalAndGazeData();
 		}
 
+		/// <inheritdoc/>
 		public override void UpdateEyePhysiologicalAndGazeData()
 		{
 			Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());

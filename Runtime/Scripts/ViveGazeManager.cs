@@ -5,6 +5,10 @@
 	using UnityEngine;
 	using ViveSR.anipal.Eye;
 
+	/// <summary>
+	/// The Gaze Manager for the Vive device, using the SRanipal API.
+	/// It updates the gaze related data, and check what is the object looked each frame.
+	/// </summary>
 	[RequireComponent(typeof(SpriteRenderer))]
 	public class ViveGazeManager : BaseGazeManager
 	{

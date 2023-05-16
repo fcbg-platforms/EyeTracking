@@ -2,12 +2,16 @@ namespace EyeTracking.Saving
 {
 	using UnityEngine;
 
+	/// <summary>
+	/// Class used for the csv output of all eye data.
+	/// It contains all eye-related data, that are gathered by gaze managers.
+	/// You can inherit this class to add more data to save.
+	/// </summary>
 	public class EyeDataOutput
 	{
 		public EyeDataOutput() { }
 		public EyeDataOutput(
 			float time,
-			//  float luminance,
 			bool isUserDetected,
 
 			int acquisitionDataSensorFrameSequence,
@@ -43,7 +47,6 @@ namespace EyeTracking.Saving
 			string objectLookedAtLabel)
 		{
 			this.time = time;
-			//  float luminance,
 			this.isUserDetected = isUserDetected;
 
 			this.acquisitionDataSensorFrameSequence = acquisitionDataSensorFrameSequence;
@@ -82,7 +85,6 @@ namespace EyeTracking.Saving
 		public EyeDataOutput(float time, IGazeManager iGazeManager)
 		{
 			this.time = time;
-			//  float luminance,
 			this.isUserDetected = iGazeManager.isUserDetected;
 
 			this.acquisitionDataSensorFrameSequence = iGazeManager.acquisitionData.sensorFrameSequence;
@@ -119,7 +121,6 @@ namespace EyeTracking.Saving
 		}
 
 		public float time { get; set; }
-		//  float luminance,
 		public bool isUserDetected { get; set; }
 
 		public int acquisitionDataSensorFrameSequence { get; set; }
