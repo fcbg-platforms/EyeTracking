@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "ch.fcbg.eye-tracking": {
-      "version": "file:com.FondationCampusBiotechGeneva.EyeTracking",
+      "version": "file:ch.fcbg.eye-tracking",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
