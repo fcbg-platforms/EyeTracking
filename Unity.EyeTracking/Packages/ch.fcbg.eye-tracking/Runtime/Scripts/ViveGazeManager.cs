@@ -195,7 +195,7 @@
 			{
 				throw new NullReferenceException();
 			}
-			_gazeData.originWorld = _headData.positionWorld + _gazeData.originLocal;
+			_gazeData.originWorld = _mainCameraMatrix4x4.MultiplyPoint(_gazeData.originLocal);
 			_gazeData.directionWorld = _mainCameraMatrix4x4.MultiplyVector(_gazeData.directionLocal);
 			_gazeData.isValid = true;
 			_isUserDetected = _eyeData.no_user;
